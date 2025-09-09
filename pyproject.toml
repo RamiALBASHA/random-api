@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "random-api"
+dynamic = ["version"]
+authors = [
+    { name = "Rami ALBASHA", email = "ralbasha@msfourrager.com" },
+]
+description = "A dummy package for learning how to create a REST API"
+readme = "README.md"
+license = { text = "GPL-3.0-only" }
+requires-python = ">=3.6"
+keywords = []
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: GPL-3.0-only",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/RamiALBASHA/random-api"
+
+[tool.setuptools.dynamic]
+version = { attr = "random_api.version.__version__" }
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
