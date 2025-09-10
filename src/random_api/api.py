@@ -19,12 +19,6 @@ def get_schema():
     return RandomVariables.model_json_schema()
 
 
-@app.post("/generate")
-def generate(input_data: RandomVariables):
-    """Echo back validated inputs (baseline test)"""
-    return {"inputs": input_data.dict()}
-
-
 @app.post("/run")
 def run_entrypoint(input_data: RandomVariables):
     """Run entrypoint() from main.py with validated inputs"""

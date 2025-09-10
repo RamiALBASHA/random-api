@@ -54,25 +54,6 @@ def create_openapi_specs(schema_props: dict[str, Any]) -> dict[str, Any]:
                     },
                 }
             },
-            "/generate": {
-                "post": {
-                    "summary": "Generate random values",
-                    "requestBody": {
-                        "required": True,
-                        "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/RandomVariables"}
-                            }
-                        },
-                    },
-                    "responses": {
-                        "200": {
-                            "description": "Generated output",
-                            "content": {"application/json": {"schema": {"type": "object"}}},
-                        }
-                    },
-                }
-            },
             "/run": {
                 "post": {
                     "summary": "Run the entrypoint of random-api",
