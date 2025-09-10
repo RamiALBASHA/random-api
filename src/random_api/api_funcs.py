@@ -61,7 +61,7 @@ def create_openapi_specs(schema_props: dict[str, Any]) -> dict[str, Any]:
                         "required": True,
                         "content": {
                             "application/json": {
-                                "schema": {"$ref": "#/components/schemas/RandomVariables"}
+                                "schema": {"$ref": "#/components/schemas/TheComponent"}
                             }
                         }
 
@@ -83,7 +83,7 @@ def create_openapi_specs(schema_props: dict[str, Any]) -> dict[str, Any]:
         },
         "components": {
             "schemas": {
-                "RandomVariables": {
+                "TheComponent": {
                     "type": "object",
                     "additionalProperties": False,
                     "properties": schema_props,
@@ -122,7 +122,7 @@ def build_pydantic_models(schema_properties: dict[str, Any]) -> BaseModel:
                 **constraints),
         )
 
-    return create_model("RandomVariables", **fields)
+    return create_model("TheComponent", **fields)
 
 
 if __name__ == "__main__":
