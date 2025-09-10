@@ -39,7 +39,7 @@ def create_openapi_specs(schema_props: dict[str, Any]) -> dict[str, Any]:
     return {
         "openapi": "3.1.0",
         "info": {
-            "title": "Random API",
+            "title": "random-api",
             "version": "1.0.0"
         },
         "paths": {
