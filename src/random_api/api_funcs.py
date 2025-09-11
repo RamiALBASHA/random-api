@@ -5,6 +5,8 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, Field, create_model
 
+PATH_METADATA: Path = Path(__file__).parents[2] / "metadata/all_variables.json"
+
 
 def convert_type(t: str):
     if t == "integer":
@@ -16,7 +18,7 @@ def convert_type(t: str):
 
 
 def create_schema_properties() -> dict[str, Any]:
-    meta = loads(Path("metadata/all_variables.json").read_text())
+    meta = loads(PATH_METADATA.read_text())
 
     schema_props = {}
     for name, spec in meta.items():
