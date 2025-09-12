@@ -1,6 +1,6 @@
 # random_api
-`random-api` is a testing Python package for learning how to implement an API structure with `FastAPI` and
-`OpenAPI 3.1` specifications.
+`random-api` is a small learning project that implements an API structure using `FastAPI` with `OpenAPI 3.1`
+specifications for a simple Python package. 
 
 # The testing package
 The package entrypoint is `main.entrypoint()`. This entrypoint is called by the API endpoint `/run`. The API itself
@@ -38,28 +38,28 @@ allowing to validate user inputs when calling the endpoints.
     in the `metadata` file `all_variables.json`:
  
     ```bash
-    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{}'
+    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"stuff": {"a": 1, "b": 2}}'
     ```
     You should get:
 
     ```bash
-    {"status":"success","result":{"done_this":0.5,"done_that":-1.0}}
+    {"status":"success","result":{"done_this":0.5,"done_that":-1.0,"do_it":3}}
     ```
 
     * Alternatively, provide input values:
     ```bash
-    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"toto": -1, "tata": 1, "titi": 1, "param": 1}'
+    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"toto": -1, "tata": 1, "titi": 1, "param": 1, "stuff": {"a": 1, "b": 2}}'
     ```
 
     * You should get:
 
     ```bash
-    {"status":"success","result":{"done_this":-1.0,"done_that":0.0}}
+    {"status":"success","result":{"done_this":-1.0,"done_that":0.0,"do_it":3}}
     ```
 
    * Now test with unallowed values:
     ```bash
-    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"toto": -100}'
+    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"toto": -100, "stuff": {"a": 1, "b": 2}}'
     ```
  
     You should get:
