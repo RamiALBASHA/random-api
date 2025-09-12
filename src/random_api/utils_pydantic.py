@@ -5,7 +5,7 @@ from pydantic import Field, create_model, BaseModel
 from pydantic.fields import FieldInfo
 from pydantic_core import PydanticUndefined
 
-from random_api.config import FILE_NAME_GENERATED_PYDANTIC_CLASSES_MODULE
+from random_api.config import PATH_GENERATED_PYDANTIC_CLASSES_MODULE
 
 
 def verify_is_nested_field(d: dict) -> bool:
@@ -203,5 +203,6 @@ if __name__ == "__main__":
         schema=create_schema_properties(read_meta_data()),
         class_name="InputsClass")
 
-    with open(FILE_NAME_GENERATED_PYDANTIC_CLASSES_MODULE, mode='w', encoding='utf-8') as f:
+    PATH_GENERATED_PYDANTIC_CLASSES_MODULE.parent.mkdir(parents=True, exist_ok=True)
+    with PATH_GENERATED_PYDANTIC_CLASSES_MODULE.open(mode='w', encoding='utf-8') as f:
         f.write(write_pydantic_classes(model=generated_model))
