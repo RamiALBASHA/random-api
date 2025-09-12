@@ -8,31 +8,46 @@ from pydantic import BaseModel, Field, create_model
 PATH_METADATA: Path = Path(__file__).parents[2] / "metadata/all_variables.json"
 
 
+def read_meta_data() -> dict:
+    return loads(PATH_METADATA.read_text())
+
+
 def convert_type(t: str):
-    if t == "integer":
-        return {"type": "integer"}
-    elif t == "float":
-        return {"type": "number", "format": "float"}
-    else:
-        return {"type": "string"}
+    match t:
+        case "integer" | "int":
+            res = {"type": "integer"}
+        case "float":
+            res = {"type": "number", "format": "float"}
+        case "object":
+            res = {"type": "object"}
+        case _:
+            res = {"type": "string"}
+    return res
 
 
-def create_schema_properties() -> dict[str, Any]:
-    meta = loads(PATH_METADATA.read_text())
+def extract_properties(d: dict) -> dict:
+    _default = d.get("default", None)
+    _type = d["type"]
+    prop = convert_type(_type)
+    prop["description"] = d.get("description", "")
+    if _default is not None:
+        prop["default"] = float(_default) if _type == "float" else int(_default) if _type == "integer" else _default
+    if "minimum" in d:
+        prop["minimum"] = d["minimum"]
+    if "maximum" in d:
+        prop["maximum"] = d["maximum"]
 
+    return prop
+
+
+def create_schema_properties(meta: dict) -> dict[str, Any]:
     schema_props = {}
     for name, spec in meta.items():
-        _default = spec.get("default", None)
-        _type = spec["type"]
-        prop = convert_type(_type)
-        prop["description"] = spec.get("description", "")
-        if _default is not None:
-            prop["default"] = float(_default) if _type == "float" else int(_default) if _type == "integer" else _default
-        if "minimum" in spec:
-            prop["minimum"] = spec["minimum"]
-        if "maximum" in spec:
-            prop["maximum"] = spec["maximum"]
-        schema_props[name] = prop
+        schema_props[name] = extract_properties(d=spec)
+        if 'properties' in spec:
+            schema_props[name]['properties'] = {}
+            for k, v in spec['properties'].items():
+                schema_props[name]['properties'].update({k: extract_properties(v)})
 
     return schema_props
 
@@ -101,6 +116,38 @@ def set_openapi_specs(schemas_properties: dict, is_write_specs: bool = False) ->
         Path("openapi.yaml").write_text(yaml.dump(openapi, sort_keys=False))
 
 
+def verify_is_properties_dict(d: dict) -> bool:
+    return "type" in d
+
+
+def build_pydantic_specs(d: dict) -> dict[str, Any]:
+    fields = {}
+    for name, spec in d.items():
+        if verify_is_properties_dict(spec):
+            _type = spec["type"]
+            typ = int if _type == "integer" else float if _type == "number" else str
+            constraints = {}
+            if "minimum" in spec:
+                constraints["ge"] = spec["minimum"]
+            if "maximum" in spec:
+                constraints["le"] = spec["maximum"]
+            default_value = spec.get("default")
+            if isinstance(typ, float):
+                default_value = float(default_value)
+
+            # Add field
+            fields[name] = (
+                typ,
+                Field(
+                    default=default_value,
+                    description=spec.get("description", ""),
+                    **constraints),
+            )
+        else:
+            fields[name] = build_pydantic_specs(d=spec)
+    return fields
+
+
 def build_pydantic_models(schema_properties: dict[str, Any]) -> BaseModel:
     fields = {}
     for name, spec in schema_properties.items():
@@ -129,6 +176,6 @@ def build_pydantic_models(schema_properties: dict[str, Any]) -> BaseModel:
 
 if __name__ == "__main__":
     set_openapi_specs(
-        schemas_properties=create_schema_properties(),
+        schemas_properties=create_schema_properties(meta=read_meta_data()),
         is_write_specs=True,
     )

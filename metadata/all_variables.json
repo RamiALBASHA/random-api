@@ -26,5 +26,25 @@
     "default": 0.5,
     "minimum": -3.0,
     "maximum": 9.0
+  },
+  "stuff": {
+    "type": "object",
+    "description": "value of stuff",
+    "properties": {
+      "a": {
+        "type": "int",
+        "description": "value of stuff.a",
+        "default": 50,
+        "minimum": -100.0,
+        "maximum": 100.0
+      },
+      "b": {
+        "type": "int",
+        "description": "value of stuff.b",
+        "default": 5,
+        "minimum": -50.0,
+        "maximum": 50.0
+      }
+    }
   }
 }
