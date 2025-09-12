@@ -1,4 +1,4 @@
-from random_api.base_functions import do_this, do_that, do_it
+from the_package.base_functions import do_this, do_that, do_it
 
 
 def entrypoint(

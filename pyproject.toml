@@ -22,10 +22,14 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/RamiALBASHA/random-api"
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
 [tool.setuptools.dynamic]
 version = { attr = "random_api.version.__version__" }
 dependencies = { file = ["requirements.txt"] }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["random_api*", "the_package*"]
 

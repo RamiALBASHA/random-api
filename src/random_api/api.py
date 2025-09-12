@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from random_api.config import PATH_GENERATED_PYDANTIC_CLASSES_MODULE
-from random_api.main import entrypoint
+from the_package.main import entrypoint
 
 with PATH_GENERATED_PYDANTIC_CLASSES_MODULE.open(mode='r') as f:
     exec(f.read())
