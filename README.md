@@ -1,12 +1,18 @@
 # random_api
-`random-api` is a testing Python package for learning how to implement an API structure with `FastAPI` and
-`OpenAPI 3.1` specifications.
+`random-api` is a small learning project that implements an API structure using `FastAPI` with `OpenAPI 3.1`
+specifications for a simple Python package.
 
-# The testing package
-The package entrypoint is `main.entrypoint()`. This entrypoint is called by the API endpoint `/run`. The API itself
-is built with `OpenAPI 3.1` specifications which are dynamically created out of the manually-set metadata specifications
-(`metadata/all_variables.json`). `Pydantic` classes are dynamically built out of the `OpenAPI` specifications,
-allowing to validate user inputs when calling the endpoints.
+# How it works
+- The Python package (`random_api`) is provided with metadata (`metadata/all_variables.json`) that specify the specs of
+all input variables used by the entrypoint `main.entrypoint()`.
+- The module `api_funcs.py` allows reading the metadata and creates a JSON schema compliant with `OpenAPI 3.1` specs.
+- The module `main_pydantic.py` uses `api_funcs.py` functions to create the JSON schema which is in turn used to
+build `pydantic` models that are necessary for validating the API inputs. The `pydantic` model declarations are written
+in a module named `pydantic_models.py` stored under `automatically_generated`.
+The name of this module is defined in `config.py`.
+- When launched, the script in `api.py` imports the `pydantic` models from `pydantic_models.py` which are then used to
+validate the user inputs when calling the endpoint `/run`. 
+
 
 # Installation
 
@@ -38,28 +44,28 @@ allowing to validate user inputs when calling the endpoints.
     in the `metadata` file `all_variables.json`:
  
     ```bash
-    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{}'
+    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"stuff": {"a": 1, "b": 2}}'
     ```
     You should get:
 
     ```bash
-    {"status":"success","result":{"done_this":0.5,"done_that":-1.0}}
+    {"status":"success","result":{"done_this":0.5,"done_that":-1.0,"do_it":3}}
     ```
 
     * Alternatively, provide input values:
     ```bash
-    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"toto": -1, "tata": 1, "titi": 1, "param": 1}'
+    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"toto": -1, "tata": 1, "titi": 1, "param": 1, "stuff": {"a": 1, "b": 2}}'
     ```
 
     * You should get:
 
     ```bash
-    {"status":"success","result":{"done_this":-1.0,"done_that":0.0}}
+    {"status":"success","result":{"done_this":-1.0,"done_that":0.0,"do_it":3}}
     ```
 
    * Now test with unallowed values:
     ```bash
-    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"toto": -100}'
+    curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d '{"toto": -100, "stuff": {"a": 1, "b": 2}}'
     ```
  
     You should get:
