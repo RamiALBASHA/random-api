@@ -1,11 +1,9 @@
-from pathlib import Path
-
 from fastapi import FastAPI
 
-from random_api.config import FILE_NAME_GENERATED_PYDANTIC_CLASSES_MODULE
+from random_api.config import PATH_GENERATED_PYDANTIC_CLASSES_MODULE
 from random_api.main import entrypoint
 
-with (Path(__file__).parent / FILE_NAME_GENERATED_PYDANTIC_CLASSES_MODULE).open(mode='r') as f:
+with PATH_GENERATED_PYDANTIC_CLASSES_MODULE.open(mode='r') as f:
     exec(f.read())
 app = FastAPI(title="Random API", version="1.0.0", openapi_version="3.1.0")
 
