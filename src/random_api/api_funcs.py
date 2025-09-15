@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, Field, create_model
 
 PATH_METADATA: Path = Path(__file__).parents[2] / "metadata/all_variables.json"
 
@@ -114,64 +113,6 @@ def set_openapi_specs(schemas_properties: dict, is_write_specs: bool = False) ->
     openapi = create_openapi_specs(schema_props=schemas_properties)
     if is_write_specs:
         Path("openapi.yaml").write_text(yaml.dump(openapi, sort_keys=False))
-
-
-def verify_is_properties_dict(d: dict) -> bool:
-    return "type" in d
-
-
-def build_pydantic_specs(d: dict) -> dict[str, Any]:
-    fields = {}
-    for name, spec in d.items():
-        if verify_is_properties_dict(spec):
-            _type = spec["type"]
-            typ = int if _type == "integer" else float if _type == "number" else str
-            constraints = {}
-            if "minimum" in spec:
-                constraints["ge"] = spec["minimum"]
-            if "maximum" in spec:
-                constraints["le"] = spec["maximum"]
-            default_value = spec.get("default")
-            if isinstance(typ, float):
-                default_value = float(default_value)
-
-            # Add field
-            fields[name] = (
-                typ,
-                Field(
-                    default=default_value,
-                    description=spec.get("description", ""),
-                    **constraints),
-            )
-        else:
-            fields[name] = build_pydantic_specs(d=spec)
-    return fields
-
-
-def build_pydantic_models(schema_properties: dict[str, Any]) -> BaseModel:
-    fields = {}
-    for name, spec in schema_properties.items():
-        _type = spec["type"]
-        typ = int if _type == "integer" else float if _type == "number" else str
-        constraints = {}
-        if "minimum" in spec:
-            constraints["ge"] = spec["minimum"]
-        if "maximum" in spec:
-            constraints["le"] = spec["maximum"]
-        default_value = spec.get("default")
-        if isinstance(typ, float):
-            default_value = float(default_value)
-
-        # Add field
-        fields[name] = (
-            typ,
-            Field(
-                default=default_value,
-                description=spec.get("description", ""),
-                **constraints),
-        )
-
-    return create_model("TheComponent", **fields)
 
 
 if __name__ == "__main__":
